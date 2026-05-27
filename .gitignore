@@ -1,0 +1,29 @@
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches and coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Runtime artifacts
+*.log
+data/
+sec-edgar-filings/
+
+# Jupyter
+.ipynb_checkpoints/
