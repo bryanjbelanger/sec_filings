@@ -1,6 +1,7 @@
 # SEC Filings Pipeline
 
 Download the latest SEC 10-K filing for active public-company tickers and convert downloaded filing documents to Markdown.
+Markdown conversion uses `sec2md` first so downloaded filings are transformed with SEC-aware structure instead of only generic HTML cleanup.
 
 This project uses a modern Python `src/` layout:
 
@@ -59,6 +60,8 @@ Convert downloaded `.txt` filings to Markdown:
 ```bash
 sec-filings parse
 ```
+
+The parser writes `.md` files next to raw SEC `.txt` downloads. It prefers `sec2md` for conversion and falls back to the legacy generic HTML converter for unusual filings that `sec2md` cannot parse.
 
 Run both steps:
 

@@ -9,7 +9,9 @@ import time
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
+from importlib import import_module
 from pathlib import Path
+from typing import Any
 
 import html2text
 from bs4 import BeautifulSoup
@@ -42,6 +44,31 @@ def clean_and_convert_file(input_path: Path, output_path: Path) -> tuple[bool, s
 
 def convert_filing_to_markdown(raw_content: str) -> str:
     """Convert raw SEC filing text/HTML into cleaned Markdown."""
+
+    try:
+        return _clean_markdown(_convert_with_sec2md(raw_content))
+    except Exception as exc:  # noqa: BLE001 - fall back to legacy converter for odd filings
+        LOGGER.warning("sec2md conversion failed; falling back to legacy converter: %s", exc)
+
+    return _convert_with_legacy_html_parser(raw_content)
+
+
+def _convert_with_sec2md(raw_content: str) -> str:
+    """Convert a filing with sec2md's SEC-aware parser."""
+
+    sec2md = import_module("sec2md")
+    parser = sec2md.Parser(_strip_metadata_header(raw_content))
+    pages = parser.get_pages()
+    return "\n\n".join(_page_content(page) for page in pages if _page_content(page).strip())
+
+
+def _page_content(page: Any) -> str:
+    content = getattr(page, "content", page)
+    return str(content)
+
+
+def _convert_with_legacy_html_parser(raw_content: str) -> str:
+    """Convert a filing with the previous generic HTML-to-Markdown fallback."""
 
     soup = BeautifulSoup(_strip_metadata_header(raw_content), "lxml")
     for element in soup(["script", "style", "textarea"]):

@@ -16,6 +16,7 @@ dependencies = [
     "lxml>=5.0",
     "pandas>=2.0",
     "requests>=2.31",
+    "sec2md>=0.1.23",
     "sec-edgar-downloader>=5.0",
 ]
 
